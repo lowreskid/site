@@ -1,0 +1,205 @@
+<!DOCTYPE HTML>
+<html>
+  <head>
+  <link href="http://vjs.zencdn.net/4.12/video-js.css" rel="stylesheet">
+<script src="http://vjs.zencdn.net/4.12/video.js"></script>
+  <script src="jquery-1.11.2.js"></script>
+  <script src="bigvideo.js"></script>
+  <script src="imagesloaded.js"></script>
+  <meta charset="UTF-8">
+  <link type="text/css" rel="stylesheet" href="webmZoneOne.css" />
+    <style>
+    </style>
+  </head>
+  <body>
+  
+    <canvas id="myCanvas" width="1920" height="1080"></canvas>
+	<canvas id="myCanvasTwo" width="1920" height="1080";></canvas>
+	
+	<div id="container">
+	<video id="webm1" src="sleepyboi.webm" autoplay="autoplay" loop></video>
+	</div>
+	
+	<audio id="mySoundClip">
+	<source src="808CowBel.wav" type="audio/wav" />
+	</audio>
+
+    <script>
+	$(function() {
+	
+	// IE detect
+	function iedetect(v) {
+
+	    var r = RegExp('msie' + (!isNaN(v) ? ('\\s' + v) : ''), 'i');
+		return r.test(navigator.userAgent);
+			
+	}
+
+	// For mobile screens, just show an image called 'poster.jpg'. Mobile
+	// screens don't support autoplaying videos, or for IE.
+	if(screen.width < 800 || iedetect(8) || iedetect(7) || 'ontouchstart' in window) {
+	
+		(adjSize = function() { // Create function called adjSize
+			
+			$width = $(window).width(); // Width of the screen
+			$height = $(window).height(); // Height of the screen
+			
+			// Resize image accordingly
+			$('#container').css({
+				'background-image' : 'url(poster.jpg)', 
+				'background-size' : 'cover', 
+				'width' : $width+'px', 
+				'height' : $height+'px'
+			});
+			
+			// Hide video
+			$('video').hide();
+			
+		})(); // Run instantly
+		
+		// Run on resize too
+		$(window).resize(adjSize);
+	}
+	else {
+
+		// Wait until the video meta data has loaded
+		$('#container video').on('loadedmetadata', function() {
+			
+			var $width, $height, // Width and height of screen
+				$vidwidth = this.videoWidth, // Width of video (actual width)
+				$vidheight = this.videoHeight, // Height of video (actual height)
+				$aspectRatio = $vidwidth / $vidheight; // The ratio the video's height and width are in
+						
+			(adjSize = function() { // Create function called adjSize
+							
+				$width = $(window).width(); // Width of the screen
+				$height = $(window).height(); // Height of the screen
+							
+				$boxRatio = $width / $height; // The ratio the screen is in
+							
+				$adjRatio = $aspectRatio / $boxRatio; // The ratio of the video divided by the screen size
+							
+				// Set the container to be the width and height of the screen
+				$('#container').css({'width' : $width+'px', 'height' : $height+'px'}); 
+							
+				if($boxRatio < $aspectRatio) { // If the screen ratio is less than the aspect ratio..
+					// Set the width of the video to the screen size multiplied by $adjRatio
+					$vid = $('#container video').css({'width' : $width*$adjRatio+'px'}); 
+				} else {
+					// Else just set the video to the width of the screen/container
+					$vid = $('#container video').css({'width' : $width+'px'});
+				}
+								 
+			})(); // Run function immediately
+						
+			// Run function also on window resize.
+			$(window).resize(adjSize);
+						
+		});
+	}
+	
+});
+
+      window.requestAnimFrame = (function(callback) {
+        return window.requestAnimationFrame || window.webkitRequestAnimationFrame || window.mozRequestAnimationFrame || window.oRequestAnimationFrame || window.msRequestAnimationFrame ||
+        function(callback) {
+          window.setTimeout(callback, 1000 / 60);
+        };
+      })();
+	  function drawBg(imageObj, context2)
+	  {
+		//context2.drawImage(imageObj, 69, 50);
+		//context2.drawImage(imageObj, -100, canvas.height / 2, 1920, 1080);
+			  imageObj.onload = function() {
+		context2.drawImage(imageObj, 0, 0, 1920, 1080);
+		//context2.width  = window.innerWidth;
+		//context2.height = window.innerHeight;
+	  };
+	  }
+      function drawRectangle(myRectangle, context) {
+        //context.beginPath();
+        //context.rect(myRectangle.x, myRectangle.y, myRectangle.width, myRectangle.height);
+        context.fillStyle = 'white';
+		context.strokeStyle = 'blue';
+        //context.fill();
+        //context.lineWidth = myRectangle.borderWidth;
+        //context.strokeStyle = 'black';
+        //context.stroke();
+		context.font = 'bold 60pt Calibri';
+		context.lineWidth = 5;
+		//context.strokeText(' ☃ WEBM ZONE ☃', myRectangle.x, myRectangle.y);
+		context.fillText(' ✰ WEBM ZONE ✰', myRectangle.x, myRectangle.y);
+		//context.fillText('E', myRectangle.x + 50, myRectangle.y + 10);
+      }
+      function animate(myRectangle, canvas, context, startTime) {
+        // update
+        var time = (new Date()).getTime() - startTime;
+        var amplitude = 20; //distance of oscillation
+
+        // in ms
+        var period = 5000; //oscillation speed
+        var centerX = canvas.width / 2 - myRectangle.width / 2;
+        var nextX = amplitude * Math.sin(time * 2 * Math.PI / period) + centerX; //lerp formula
+        myRectangle.y = nextX; // Change to .x or .y to change which direction it oscillates
+        // clear
+        context.clearRect(0, 0, canvas.width, canvas.height); //looks cool when disabled
+
+        // draw
+        drawRectangle(myRectangle, context);
+
+        // request new frame
+        requestAnimFrame(function() {
+          animate(myRectangle, canvas, context, startTime);
+        });
+      }
+	  
+	  var mysound = document.getElementById("mySoundClip");
+      var canvas = document.getElementById('myCanvas');
+	  //var canvas2 = document.getElementById('myCanvasTwo');
+      var context = myCanvas.getContext('2d');
+	  //var context2 = myCanvasTwo.getContext('2d');
+      var myRectangle = {
+        x: canvas.width / 2,
+        y: canvas.height / 2,
+        width: 10,
+        height: 10,
+        //borderWidth: 5
+      };
+	  var imageObj = new Image();
+	  //myCanvas.style.left = "300px";
+      //myCanvas.style.top = "300px";
+	  //canvas2.style.width = window.innerWidth + "px";
+	  //canvas2.style.height = window.innerHeight + "px";
+	  canvas.style.width = window.innerWidth + "px";
+	  canvas.style.height = window.innerHeight + "px";
+      myCanvas.style.position = "absolute"; // global position of all canvases
+	   
+		imageObj.src = 'https://media.8chan.co/vapor/src/1416203090578.jpg'
+	
+	  
+      //drawRectangle(myRectangle, context);
+	  //drawBg(imageObj, context2);
+	
+      // wait one second before starting animation
+      setTimeout(function() {
+        var startTime = (new Date()).getTime();
+        animate(myRectangle, canvas, context, startTime);
+		//animateBg(myRectangle, canvas2, context2, startTime);
+      }, 0);
+    </script>
+	    
+		<div class="content">	
+	
+		<div>
+		<a class="thumbnail" href="#thumb">
+		<video id="webm3" src="Rixelman.webm" width="240px" height="135px" onMouseOver="mysound.play();"></video><div><video src="Rixelman.webm" autoplay="autoplay" loop width="640px" height="360px"></div>
+		</a>
+		<a class="thumbnail" href="#thumb">
+		<video id="webm4" src="wifigod.webm" width="240px" height="135px" onMouseOver="mysound.play();"></video><div><video src="wifigod.webm" autoplay="autoplay" loop width="640px" height="360px" /></div>
+		</a>
+		</div>
+	
+
+	</div>
+  </body>
+</html>      

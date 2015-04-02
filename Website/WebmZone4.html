@@ -1,0 +1,97 @@
+<!DOCTYPE HTML>
+<html>
+  <head>
+    <style>
+	<link rel="webmZone" type="text/css" href="webmZone.css">
+    </style>
+  </head>
+  <body>
+    <canvas id="myCanvas" width="1920" height="1080"></canvas>
+	<canvas id="myCanvasTwo" width="1920" height="1080";></canvas>
+    <script>
+      window.requestAnimFrame = (function(callback) {
+        return window.requestAnimationFrame || window.webkitRequestAnimationFrame || window.mozRequestAnimationFrame || window.oRequestAnimationFrame || window.msRequestAnimationFrame ||
+        function(callback) {
+          window.setTimeout(callback, 1000 / 60);
+        };
+      })();
+
+	  function drawBg(imageObj, context2)
+	  {
+		//context2.drawImage(imageObj, 69, 50);
+		//context2.drawImage(imageObj, -100, canvas.height / 2, 1920, 1080);
+			  imageObj.onload = function() {
+		context2.drawImage(imageObj, 0, 0, 1920, 1080);
+		//context2.width  = window.innerWidth;
+		//context2.height = window.innerHeight;
+	  };
+	  }
+      function drawRectangle(myRectangle, context) {
+        //context.beginPath();
+        //context.rect(myRectangle.x, myRectangle.y, myRectangle.width, myRectangle.height);
+        context.fillStyle = 'black';
+        //context.fill();
+        //context.lineWidth = myRectangle.borderWidth;
+        //context.strokeStyle = 'black';
+        //context.stroke();
+		context.font = 'italic 40pt Calibri';
+		context.fillText('ayy lmao', myRectangle.x, myRectangle.y);
+		//context.fillText('E', myRectangle.x + 50, myRectangle.y + 10);
+      }
+      function animate(myRectangle, canvas, context, startTime) {
+        // update
+        var time = (new Date()).getTime() - startTime;
+        var amplitude = 20; //distance of oscillation
+
+        // in ms
+        var period = 2000; //oscillation speed
+        var centerX = canvas.width / 2 - myRectangle.width / 2;
+        var nextX = amplitude * Math.sin(time * 2 * Math.PI / period) + centerX; //lerp formula
+        myRectangle.y = nextX; // Change to .x or .y to change which direction it oscillates
+        // clear
+        context.clearRect(0, 0, canvas.width, canvas.height); //looks cool when disabled
+
+        // draw
+        drawRectangle(myRectangle, context);
+
+        // request new frame
+        requestAnimFrame(function() {
+          animate(myRectangle, canvas, context, startTime);
+        });
+      }
+	  
+      var canvas = document.getElementById('myCanvas');
+	  var canvas2 = document.getElementById('myCanvasTwo');
+      var context = myCanvas.getContext('2d');
+	  var context2 = myCanvasTwo.getContext('2d');
+      var myRectangle = {
+        x: canvas.width / 2,
+        y: canvas.height / 2,
+        width: 10,
+        height: 10,
+        //borderWidth: 5
+      };
+	  var imageObj = new Image();
+	  //myCanvas.style.left = "300px";
+      //myCanvas.style.top = "300px";
+	  canvas2.style.width = window.innerWidth + "px";
+	  canvas2.style.height = window.innerHeight + "px";
+	  canvas.style.width = window.innerWidth + "px";
+	  canvas.style.height = window.innerHeight + "px";
+      myCanvas.style.position = "absolute"; // global position of all canvases
+	   
+		imageObj.src = 'https://media.8chan.co/vapor/src/1416203090578.jpg'
+	
+	  
+      drawRectangle(myRectangle, context);
+	  drawBg(imageObj, context2);
+	
+      // wait one second before starting animation
+      setTimeout(function() {
+        var startTime = (new Date()).getTime();
+        animate(myRectangle, canvas, context, startTime);
+		animateBg(myRectangle, canvas2, context2, startTime);
+      }, 0);
+    </script>
+  </body>
+</html>      

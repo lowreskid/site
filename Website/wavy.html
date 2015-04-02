@@ -1,0 +1,70 @@
+var options = {
+    period:100,
+    squeeze:0,
+    wavelength:40,
+    amplitude:30,
+    shading:300,
+    fps:30
+}
+
+var ca = document.getElementById('canvas');
+var ctx = ca.getContext('2d');
+ctx.canvas.width  = 400;
+ctx.canvas.height = 150;
+
+ctx.font = 'bold 45pt Arial';
+ctx.textAlign = 'center';
+ctx.fillStyle = 'blue';
+ctx.fillText('Hello World', 170, 60);
+
+w = canvas.width,
+h = canvas.height,
+od = ctx.getImageData( 0, 0, w, h ).data;
+
+setInterval(function() {
+        var id = ctx.getImageData( 0, 0, w, h ),
+                d = id.data,
+                now = ( new Date() )/options.period,
+                y,
+                x,
+                lastO,
+                shade,
+                sq = ( y - h/2 ) * options.squeeze,
+                px,
+                pct,
+                o,
+                y2,
+                opx;
+
+        for ( y = 0; y < h; y += 1 ) {
+
+            lastO = 0;
+            shade = 0;
+            sq = ( y - h/2 ) * options.squeeze;
+
+            for ( x = 0; x < w; x += 1 ) {
+
+                px  = ( y * w + x ) * 4;
+                pct = x/w;
+                o   = Math.sin( x/options.wavelength - now ) * options.amplitude * pct;
+                y2  = y + ( o + sq * pct ) << 0;
+                opx = ( y2 * w + x ) * 4;
+
+                shade = (o-lastO) * options.shading;
+                d[px  ] = od[opx  ]+shade;
+                d[px+1] = od[opx+1]+shade;
+                d[px+2] = od[opx+2]+shade;
+                d[px+3] = od[opx+3];
+                lastO = o;
+
+            }
+
+        }
+
+        ctx.putImageData( id, 0, 0 );
+
+    },
+
+    1000/options.fps
+
+); 
